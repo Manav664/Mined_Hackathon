@@ -2,6 +2,7 @@ import os
 import argparse
 import errno
 from pathlib import Path
+from typing import final
 import cv2
 import numpy as np
 from keras.models import load_model
@@ -12,20 +13,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     requiredNamed = parser.add_argument_group('required named arguments')
     
-    requiredNamed.add_argument("-ds_p", "--dataset_path", help="Complete dataset path", type=Path, required=True)
-    requiredNamed.add_argument("-op_p", "--output_path", help="Complete output path", type=Path, required=True)
+    requiredNamed.add_argument("-ds_p", "--dataset_path", help="Path to Image file", type=Path, required=True)
+    requiredNamed.add_argument("-m_p", "--model_path", help="Path to model", type=Path, required=True)
+    requiredNamed.add_argument("-op_p", "--output_path", help="Destination Path", type=Path, required=True)
     # parser.parse_args(['-h'])
     
     p = parser.parse_args()
+    model_path = p.model_path
 
-    # file = open("./paths.py", "w")
     if p.dataset_path.exists() == False:
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), p.dataset_path)
     
     elif p.dataset_path.exists() == True:
         print(f"Dataset Path = {p.dataset_path}")    
         final_dataset_path = p.dataset_path
-        # file.write(f'final_dataset_path = "{p.dataset_path}"\n')
 
     if p.output_path.exists() == False:
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), p.dataset_path)
@@ -33,12 +34,7 @@ if __name__ == "__main__":
     elif p.output_path.exists() == True:   
         print(f"Output Path = {p.output_path}")
         final_output_path = p.output_path       
-        # file.write(f'final_output_path = "{p.output_path}"\n') 
-
-    # file.close()
-
-    # os.system(f"python ./viren.py -ds_p {p.dataset_path} -op_p {p.output_path}")
-
+    
 def preprocess_image(image_path):
     # load image
     image = cv2.imread(image_path)
@@ -76,15 +72,14 @@ def get_output(image,mask):
     out = cv2.merge((b, g, r, mask))
     return out
 
-def something():
-    image,processed_img = preprocess_image(f'{final_dataset_path}')
+image,processed_img = preprocess_image(f'{final_dataset_path}')
 
-    model=load_saved_model('/content/drive/MyDrive/temp_data_storage/u2net_keras.h5')
+model=load_saved_model(f'{model_path}')
 
-    # predict
-    d1,d2,d3,d4,d5,d6,d7 = model.predict(processed_img)
+# predict
+d1,d2,d3,d4,d5,d6,d7 = model.predict(processed_img)
 
-    mask = get_mask(d1)
-    out = get_output(image,mask)
+mask = get_mask(d1)
+out = get_output(image,mask)
 
 image,processed_img = preprocess_image(f'{final_dataset_path}')
