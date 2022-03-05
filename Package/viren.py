@@ -1,7 +1,8 @@
+from importlib.resources import path
 import cv2
 import numpy as np
 from keras.models import load_model
-import paths.py
+import paths
 
 def preprocess_image(image_path):
     # load image
@@ -41,7 +42,7 @@ def get_output(image,mask):
     return out
 
 def something():
-    image,processed_img = preprocess_image(f'final_dataset_path')
+    image,processed_img = preprocess_image(f'{paths.final_dataset_path}')
 
     model=load_saved_model('/content/drive/MyDrive/temp_data_storage/u2net_keras.h5')
 
@@ -51,4 +52,4 @@ def something():
     mask = get_mask(d1)
     out = get_output(image,mask)
 
-image,processed_img = preprocess_image(f'final_dataset_path')
+image,processed_img = preprocess_image(f'{paths.final_dataset_path}')
